@@ -29,13 +29,38 @@
 	函数中的`this`的值取决于函数调用的模式：  
   1. 方法调用模式  
   当函数被保存为对象的一个属性时，成该函数为该对象的方法。函数中`this`的值为该对象。
+  
+  		var foo = {
+  			name: 'fooname',
+  			getName: function (){
+  				return this.name  
+  			}
+  		}
+  		
+  		foo.getName();  // this => foo
   2. 函数调用模式  
   当函数并不是对象的属性。函数中`this`的值为全局对象  
   note：某个方法中的内部函数中的`this`的值也是全局对象，而非外部函数的`this`
+  
+  		function foo(){
+  			this.name = 'fooname';  
+  		}
+  		foo();  // this => window
   3. 构造器调用模式  
   即使用`new`调用的函数，则其中`this`将会被绑定到那个新构造的对象。
+  
+  		function Foo(){
+  			this.name = 'fooname';
+  		}
+  		var foo = new Foo();  // this => foo
   4. 使用`apply`或`call`调用模式  
   该模式调用时，函数中`this`被绑定到apply或call方法调用时接受的第一个参数。
+  
+  		function getName(name){
+  			this.name = name;
+  		}
+  		var foo = {};
+  		getName.call(foo, name);  // this =>foo
   
 + ####Explain prototypal inheritance  
 	所有的object都是基于prototype的，同时prototype也是object，定义了基于它的object的属性和方法。在大部分浏览器中object的_proto_属性对应这其prototype。
@@ -118,3 +143,50 @@ scope chain中的每个object称为variable object
 			};
 		}
 	
+	
+	利用闭包可以给对象设置私有属性并利用特权(Privileged)方法访问私有属性。
+	
+		var Foo = function(){
+			var name = 'fooname';
+			var age = 12;
+			this.getName = function(){
+				return name;
+			};
+			this.getAge = function(){
+				return age;
+			};
+		};
+		var foo = new Foo();
+		
+		foo.name;        //  => undefined
+		foo.age;         //  => undefined
+		foo.getName();   //  => 'fooname'
+		foo.getAge();    //  => 12
+		
++ ####What is `'use strict';`?   
+`'use strict';`用于开启JavaScript的严格模式。
+
+		(function(){
+			'use strict';
+			
+			// strict mode
+			
+			function foo() {
+				// strict mode
+			}
+			
+		})();
+严格模式主要变化有:
+	+ 去掉`with`  
+	如果使用会被认为无效的语法错误。
+	+ 禁止使用未申明的变量  
+	在普通模式中使用未申明的变量会创造一个全局变量，在严格模式中，该行为会报错。
+	+ `this`不再指向`global`  
+	在普通模式中函数作为普通函数调用时，其中的`this`指向`global`。在严格模式中，`this`的值为undefined。
+	+ 禁止重复  
+	在严格模式中，函数参数名重复、对象属性名重复都会报告语法错误。
+	+ 显示报错  
+	设置禁止修改后，仍对对象属性进行修改，在普通模式中，该行为会失败，但不会报错；在严格模式中该行为会报错。
+
+	总的说，严格模式对一些不安全行为做出了限制并会报错，并去掉了部分令人混乱的特性。详细见[It’s time to start using JavaScript strict mode](http://www.nczonline.net/blog/2012/03/13/its-time-to-start-using-javascript-strict-mode/)
+		
