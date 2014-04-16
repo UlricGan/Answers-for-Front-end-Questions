@@ -133,17 +133,6 @@ scope chain中的每个object称为variable object
 	
 	当存在closure时，外部函数执行时所创建的execution context中的scope chain会被复制进内部函数的[[ Scope ]]属性中。也就是说当外部函数执行完毕后，execution context被销毁，但内部函数的[[ Scope ]]仍保留了被销毁的execution context的scope chain(包含activation object)
 	
-+ ####What's a typical use case for anonymous functions?  
-	匿名函数可以用于闭包。例如：
-	
-		var foo = function (){
-			// stuff
-			return function(){
-			// stuff
-			};
-		}
-	
-	
 	利用闭包可以给对象设置私有属性并利用特权(Privileged)方法访问私有属性。
 	
 		var Foo = function(){
@@ -162,7 +151,19 @@ scope chain中的每个object称为variable object
 		foo.age;         //  => undefined
 		foo.getName();   //  => 'fooname'
 		foo.getAge();    //  => 12
-		
+
+	
++ ####What's a typical use case for anonymous functions?  
+	匿名函数可以用于闭包。例如：
+	
+		var foo = function (){
+			// stuff
+			return function(){
+			// stuff
+			};
+		}
+	
+			
 + ####What is `'use strict';`?   
 `'use strict';`用于开启JavaScript的严格模式。
 
@@ -189,4 +190,26 @@ scope chain中的每个object称为variable object
 	设置禁止修改后，仍对对象属性进行修改，在普通模式中，该行为会失败，但不会报错；在严格模式中该行为会报错。
 
 	总的说，严格模式对一些不安全行为做出了限制并会报错，并去掉了部分令人混乱的特性。详细见[It’s time to start using JavaScript strict mode](http://www.nczonline.net/blog/2012/03/13/its-time-to-start-using-javascript-strict-mode/)
+
++ ####Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?  
+	`function Person(){}`是声明函数，只要是在同一作用域内，可以在任意地方调用该函数，即使在声明函数前。  
+	`var person = Person()`是调用名为Person的函数，并将返回值赋值给person，如果该函数没有返回值，则将undefined赋值给person。  
+	`var person = new Person()`一般所调用的是构造函数，返回一个新对象，并且构造函数中的`this`指向这个新对象。
+	
++ ####What's the difference between `.call` and `.apply`?  
+	两个都是调用函数的方法，两者不同点是参数的不同。  
+	两个方法第一个参数相同，都是函数调用的上下文，即`this`的指向。  
+	`.call`方法将第一个之后的参数作为函数的调用传入的值（参数）。`.apply`方法传入函数调用的参数则是放在其第二个参数的数组中。  
+	note：`.apply`的第二个参数既可以是数组，也可以是类数组，如arguments
+	
+		function sum(){
+			var result = 0;
+			for(var i = 0, l = arguments.length; i < l; i++){
+				result += arguments[i];
+			}
+			return result;
+		}
+		
+		sum.call(null, 1, 2, 3);     // =>6
+		sum.apply(null, [1, 2, 3]);  // =>6
 		
